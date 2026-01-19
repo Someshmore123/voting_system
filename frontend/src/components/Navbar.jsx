@@ -10,10 +10,8 @@ export default function Navbar() {
   let role = "voter";
 
   try {
-    const decoded = jwtDecode(token);
-    role = decoded.role;
-  } catch (err) {
-    console.error("Invalid token");
+    role = jwtDecode(token).role;
+  } catch {
     localStorage.removeItem("token");
     navigate("/");
     return null;

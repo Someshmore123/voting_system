@@ -12,9 +12,9 @@ router.post("/signup", async (req, res) => {
   try {
     const { name, aadharCardNumber, password, age, address, role } = req.body;
 
-    if (!name || !aadharCardNumber || !password || !age || !address) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
+  if (!name || !aadharCardNumber || !password) {
+  return res.status(400).json({ error: "All fields are required" });
+}
 
     // Check 12-digit Aadhar
     if (!/^\d{12}$/.test(aadharCardNumber)) {
@@ -24,12 +24,24 @@ router.post("/signup", async (req, res) => {
     // Check duplicate
     const existingUser = await User.findOne({ aadharCardNumber });
     if (existingUser) return res.status(400).json({ error: "User already exists" });
+  
+    // 🔒 allow only one admin
+if (req.body.role === "admin") {
+  const adminExists = await User.findOne({ role: "admin" });
+  if (adminExists) {
+    return res
+      .status(400)
+      .json({ error: "Admin already exists, choose voter role" });
+  }
+}
+
 
     // Prevent multiple admins
     if (role === "admin") {
       const adminExists = await User.findOne({ role: "admin" });
       if (adminExists) return res.status(400).json({ error: "Admin already exists" });
     }
+    
 
     // Save user
     const newUser = new User({ name, aadharCardNumber, password, age, address, role });
@@ -92,31 +104,33 @@ router.get("/profile", jwtAuthMiddleware, async (req, res) => {
 });
 
 // ================= UPDATE PASSWORD =================
+// ================= UPDATE PASSWORD =================
+// ================= UPDATE PASSWORD =================
 router.put("/profile/password", jwtAuthMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
-      return res
-        .status(400)
-        .json({ error: "Both currentPassword and newPassword are required" });
+      return res.status(400).json({ error: "Both passwords required" });
     }
 
     const user = await User.findById(userId);
 
     if (!user || !(await user.comparePassword(currentPassword))) {
-      return res.status(401).json({ error: "Invalid current password" });
+      return res.status(401).json({ error: "Current password incorrect" });
     }
 
     user.password = newPassword;
     await user.save();
 
-    res.status(200).json({ message: "Password updated" });
+    res.json({ message: "Password updated successfully" });
   } catch (err) {
-    console.error(err);
+    console.error("Password update error:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 
 export default router;

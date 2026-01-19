@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import { getCandidates, voteCandidate } from "../api/api";
 import Candidate from "../components/Candidate";
 
-console.log(Candidate);
-
-
 export default function Dashboard() {
   const [candidates, setCandidates] = useState([]);
   const [voted, setVoted] = useState(false);
 
   useEffect(() => {
-    getCandidates().then(res => setCandidates(res.data));
+    getCandidates().then((res) => setCandidates(res.data));
   }, []);
 
   const vote = async (id) => {
@@ -23,7 +20,7 @@ export default function Dashboard() {
     <div>
       <h1>Vote for Candidate</h1>
 
-      {candidates.map(candidate => (
+      {candidates.map((candidate) => (
         <Candidate
           key={candidate._id}
           candidate={candidate}

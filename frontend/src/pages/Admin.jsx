@@ -3,7 +3,6 @@ import {
   addCandidate,
   deleteCandidate,
   getCandidates,
-  getVoteCount,
 } from "../api/api";
 
 export default function Admin() {
@@ -11,34 +10,31 @@ export default function Admin() {
   const [party, setParty] = useState("");
   const [age, setAge] = useState("");
   const [candidates, setCandidates] = useState([]);
-  const [votes, setVotes] = useState([]);
 
-  const loadData = async () => {
-    const c = await getCandidates();
-    const v = await getVoteCount();
-    setCandidates(c.data);
-    setVotes(v.data);
+  const load = async () => {
+    const res = await getCandidates();
+    setCandidates(res.data);
   };
 
   useEffect(() => {
-    loadData();
+    load();
   }, []);
 
   const add = async () => {
     if (!name || !party || !age) {
-      alert("Fill all candidate fields");
+      alert("Fill all fields");
       return;
     }
     await addCandidate({ name, party, age });
     setName("");
     setParty("");
     setAge("");
-    loadData();
+    load();
   };
 
   const remove = async (id) => {
     await deleteCandidate(id);
-    loadData();
+    load();
   };
 
   return (
@@ -57,13 +53,6 @@ export default function Admin() {
           {c.name} ({c.party})
           <button onClick={() => remove(c._id)}>Delete</button>
         </div>
-      ))}
-
-      <h3>Vote Count</h3>
-      {votes.map((v, i) => (
-        <p key={i}>
-          {v.party}: {v.count}
-        </p>
       ))}
     </div>
   );

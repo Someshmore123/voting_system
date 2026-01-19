@@ -1,35 +1,45 @@
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
+// ✅ Ensure env variables are loaded
+dotenv.config();
+
+/* ================= AUTH MIDDLEWARE ================= */
 const jwtAuthMiddleware = (req, res, next) => {
-  // first check request headers has authorization or not
-  const authorization = req.headers.authorization;
-  if (!authorization) {
-    return res.status(401).json({ error: "Token Not Found" });
+  const authHeader = req.headers.authorization;
+
+  // Header format: "Bearer token"
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Authorization token missing" });
   }
 
-  // Extract the jwt token from the request headers
-  const token = authorization.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  const token = authHeader.split(" ")[1];
 
   try {
-    // Verify the JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Attach user information to the request object
+    // decoded MUST contain { id, role }
     req.user = decoded;
     next();
   } catch (err) {
-    console.error(err);
-    res.status(401).json({ error: "Invalid token" });
+    console.error("JWT Error:", err.message);
+    return res.status(401).json({ error: "Invalid or expired token" });
   }
 };
 
-// Function to generate JWT token
-const generateToken = (userData) => {
-  // Generate a new JWT token using user data
-  return jwt.sign(userData, process.env.JWT_SECRET, { expiresIn: 30000 });
+/* ================= TOKEN GENERATOR ================= */
+const generateToken = (user) => {
+  // user MUST contain id and role
+  return jwt.sign(
+    {
+      id: user.id,
+      role: user.role,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "1h", // ✅ use readable format
+    }
+  );
 };
 
 export { jwtAuthMiddleware, generateToken };
