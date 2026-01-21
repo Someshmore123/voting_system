@@ -1,23 +1,13 @@
 export default function Candidate({ candidate, onVote, disabled }) {
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        padding: "16px",
-        marginBottom: "10px",
-        borderRadius: "6px",
-      }}
-    >
-      <h3>{candidate.name}</h3>
+    <div className="card candidate-card">
+      <div className="candidate-info">
+        <h3>{candidate.name}</h3>
+        <p>Party: {candidate.party}</p>
+        <p>Votes: {candidate.voteCount}</p>
+      </div>
 
-      <button
-        onClick={() => onVote(candidate._id)}
-        disabled={disabled}
-        style={{
-          padding: "6px 12px",
-          cursor: disabled ? "not-allowed" : "pointer",
-        }}
-      >
+      <button onClick={() => onVote(candidate._id)} disabled={disabled}>
         {disabled ? "Already Voted" : "Vote"}
       </button>
     </div>

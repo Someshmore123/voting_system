@@ -36,13 +36,6 @@ if (req.body.role === "admin") {
 }
 
 
-    // Prevent multiple admins
-    if (role === "admin") {
-      const adminExists = await User.findOne({ role: "admin" });
-      if (adminExists) return res.status(400).json({ error: "Admin already exists" });
-    }
-    
-
     // Save user
     const newUser = new User({ name, aadharCardNumber, password, age, address, role });
     const savedUser = await newUser.save();
@@ -78,11 +71,11 @@ router.post("/login", async (req, res) => {
         .json({ error: "Invalid Aadhar Card Number or Password" });
     }
 
-    const payload = {
-      id: user.id,
-    };
+   const token = generateToken({
+  id: user._id,
+  role: user.role,
+});
 
-    const token = generateToken(payload);
 
     res.json({ token });
   } catch (err) {

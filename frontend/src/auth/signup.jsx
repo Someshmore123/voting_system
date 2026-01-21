@@ -9,7 +9,7 @@ export default function Signup() {
     password: "",
     age: "",
     address: "",
-    role: "admin",
+    role: "voter",
   });
 
   const navigate = useNavigate();

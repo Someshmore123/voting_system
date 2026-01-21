@@ -33,7 +33,7 @@ export default function Profile() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Profile</h2>
       <p>Name: {user.name}</p>
 

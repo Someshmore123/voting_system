@@ -17,7 +17,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Vote for Candidate</h1>
 
       {candidates.map((candidate) => (

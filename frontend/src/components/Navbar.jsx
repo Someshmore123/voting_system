@@ -23,10 +23,16 @@ export default function Navbar() {
   };
 
   return (
-    <nav style={{ display: "flex", gap: 15, marginBottom: 20 }}>
+    <nav className="navbar">
+      <div style={{ fontWeight: "bold", color: "white" }}>
+        Voting System
+      </div>
+
       <Link to="/dashboard">Dashboard</Link>
       <Link to="/profile">Profile</Link>
+
       {role === "admin" && <Link to="/admin">Admin</Link>}
+
       <button onClick={logout}>Logout</button>
     </nav>
   );
